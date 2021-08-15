@@ -1,0 +1,24 @@
+.header{
+    background-color: #3d060e;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+
+    h1{
+        margin: 0 3rem;
+        font-size: 3rem;
+        font-family: cursive;
+    }
+    ul{
+        display: flex;
+        text-align: center;
+        margin-right: 5rem;
+    }
+    li{
+        text-align: center;
+        padding: 1rem;
+        margin: 0 1rem;
+        list-style: none;
+        cursor: pointer;
+    }
+}
