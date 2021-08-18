@@ -6,6 +6,8 @@ import Header from './components/Header/Header';
 import Search from './components/Search/Search';
 import Books from './components/Home/Books';
 import BookShelf from './components/Home/BookShelf';
+import SearchButton from './components/Search/SearchButton';
+
 
 import './App.scss'
 
@@ -20,11 +22,17 @@ class App extends Component {
      */
     showSearchPage: false
   }
+
+
+updateSearchPageState = state => {
+  this.setState({showSearchPage: state});
+}
+
   render(){
     return (
       <div className="app">
          {this.state.showSearchPage ? (
-          <Search/>
+          <Search showSearchPage={this.state.updateSearchPageState}/>
            ) : ( 
             <div className="list-books">
     <Header />
@@ -32,9 +40,7 @@ class App extends Component {
     
     <BookShelf />
  
-          <div className="open-search">
-            <button onClick={() => this.setState({ showSearchPage: true })}>Add a book</button>
-          </div>
+        <SearchButton showSearchPage={this.updateSearchPageState} />
              </div>
            )}
     </div>
