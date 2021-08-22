@@ -1,38 +1,68 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from "react-router-dom";
+import * as BooksAPI from '../../BooksAPI';
+import BookShelf from '../Home/BookShelf';
 
 
 class Search extends React.Component {
-
+    static propTypes = {
+        books: PropTypes.array.isRequired,
+        changeShelf: PropTypes.func.isRequired
+      };
 
     state = {
-        /**
-         * TODO: Instead of using this state variable to keep track of which page
-         * we're on, use the URL in the browser's address bar. This will ensure that
-         * users can use the browser's back and forward buttons to navigate between
-         * pages, as well as provide a good URL they can bookmark and share.
-         */
-        showSearchPage: false
+        query: '',
+        newBooks: [],
+        // showSearchPage: false
+        searchErr: false
       }
+      getBooks = (e) => {
+        const query =e.target.value;
+        this.setState({ query });
+    
+        if (query) {
+         BooksAPI.search(query.trim(), 20).then(books => {
+            books.length > 0
+              ? this.setState({ newBooks: books, searchErr: false })
+              : this.setState({ newBooks: [], searchErr: true });
+          });
+    
+          // if query is empty => reset state to default
+        } else this.setState({ newBooks: [], searchErr: false });
+      };
+    
 
     render() {
-
+        const { query, newBooks, searchErr } = this.state;
+        const { books, changeShelf } = this.props;
+    
         return (
           <div className="search-books">
             <div className="search-books-bar">
-              <button className="close-search" onClick={() => this.setState({ showSearchPage: false })}>Close</button>
+              <Link className="close-search" to="/">Close </Link>
               <div className="search-books-input-wrapper">
-                {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
-                <input type="text" placeholder="Search by title or author"/>
+               
+                <input type="text" value={query} onChange={this.getBooks} placeholder="Search by title or author"/>
 
               </div>
             </div>
             <div className="search-books-results">
+            {newBooks.length > 0 && (
+            <div>
+              <h3>Search returned {newBooks.length} books </h3>
+              <ol className="books-grid">
+              {newBooks.map(book => (
+                  <BookShelf
+                    book={book}
+                    books={books}
+                    key={book.id}
+                    changeShelf={changeShelf}
+                  />
+                ))}
+              </ol>
+            </div>
+          )}
               <ol className="books-grid"></ol>
             </div>
           </div>

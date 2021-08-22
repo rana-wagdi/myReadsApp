@@ -1,15 +1,23 @@
 import { Component } from 'react';
-import { useEffect } from "react";
+
 import * as BooksAPI from '../../BooksAPI';
 
 
 class Books extends Component {
-    state = {books: [] };
+    
+
+
+
     componentDidMount(){
 
            BooksAPI.getAll().then(books => this.setState({ books }));
     }
     render () {
+         const book = this.props.book;
+    const books = this.props.books;
+    const changeShelf = this.props.changeShel;
+
+
         return (
             <div>
     

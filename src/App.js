@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch, BrowserRouter } from "react-router-dom";
 import { Component } from 'react';
 
 import Header from './components/Header/Header';
@@ -7,48 +7,91 @@ import Search from './components/Search/Search';
 import Books from './components/Home/Books';
 import BookShelf from './components/Home/BookShelf';
 import SearchButton from './components/Search/SearchButton';
-
+import BookList from './components/Home/BookList';
+import *as BooksAPI from './BooksAPI';
 
 import './App.scss'
 
 class App extends Component {
 
   state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-    showSearchPage: false
+    
+    showSearchPage: false,
+    books: [],
+    query: ""
   }
 
 
-updateSearchPageState = state => {
-  this.setState({showSearchPage: state});
+  updateSearchPage = state => {
+    this.setState({ showSearchPage: state });
+  }
+  componentDidMount() {
+
+    BooksAPI.getAll().then(books => this.setState({ books }))
+  }
+
+  changeShelf = (book, shelf) => {
+
+
+    BooksAPI.update(book, shelf).then(response => {
+      book.shelf = shelf;
+
+      this.setState(prevState => ({
+        books: prevState.books
+
+          .filter(book => book.id !== book.id)
+
+          .concat(book)
+      }));
+    });
+  };
+
+
+
+  render() {
+    const { books } = this.state;
+    return (
+
+      <BrowserRouter>
+
+        <div className="app">
+
+
+          <Route
+            path="/search"
+            render={() => (
+              <Search books={books} changeShelf={this.changeShelf} />
+            )}
+
+          />
+
+
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <div className="list-books">
+                <Header />
+                {/* <Books /> */}
+
+                <BookList allBooks={this.state.books} changeShelf={this.changeShelf} />
+                <Link to="/search">
+                  <SearchButton showSearchPage={this.updateSearchPage} />
+                </Link>
+              </div>
+
+
+
+            )}
+
+          />
+        </div>
+      </BrowserRouter>
+    );
+  }
+
 }
 
-  render(){
-    return (
-      <div className="app">
-         {this.state.showSearchPage ? (
-          <Search showSearchPage={this.state.updateSearchPageState}/>
-           ) : ( 
-            <div className="list-books">
-    <Header />
-    <Books />
-    
-    <BookShelf />
- 
-        <SearchButton showSearchPage={this.updateSearchPageState} />
-             </div>
-           )}
-    </div>
-   );
- }
- 
-  }
+export default App;
 
-  export default App;
-  
 
